@@ -36,3 +36,19 @@ app.get("/api/recipes", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch recipes" });
   }
 });
+
+app.post("/api/recipes", async (req, res) => {
+  const { name } = req.body;
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO recipes (name) VALUES ($1) RETURNING *",
+      [name],
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Failed to create recipe:", error);
+    res.status(500).json({ error: "Failed to create recipe" });
+  }
+});
