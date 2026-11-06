@@ -35,6 +35,11 @@ function App() {
   function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (recipeName.trim() === "") {
+      alert("Please enter a recipe name.");
+      return;
+    }
+
     fetch("http://localhost:3001/api/recipes", {
       method: "POST",
       headers: {
@@ -42,7 +47,12 @@ function App() {
       },
       body: JSON.stringify({ name: recipeName }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to create recipe");
+        }
+        return response.json();
+      })
       .then((data: Recipe) => {
         setRecipes((previousRecipes) => [...previousRecipes, data]);
         setRecipeName("");

@@ -40,10 +40,18 @@ app.get("/api/recipes", async (req, res) => {
 app.post("/api/recipes", async (req, res) => {
   const { name } = req.body;
 
+  if (typeof name !== "string" || name.trim() === "") {
+    return res.status(400).json({
+      error: "Recipe name is required",
+    });
+  }
+
+  const cleanName = name.trim();
+
   try {
     const result = await pool.query(
       "INSERT INTO recipes (name) VALUES ($1) RETURNING *",
-      [name],
+      [cleanName],
     );
 
     res.status(201).json(result.rows[0]);
